@@ -5,32 +5,18 @@ public class Player
 {
 
 	public final static int INITIAL_LIFE_POINT = 20;
-
 	public final static int MANA_INITIAL_NUMBER = 5;
-	
 	public static final int MAXIMAL_MANA_NUMBER = 10;
-
 	public final static int INITIAL_CARD_NUMBER = 3;
-
 	public static int NUMBER_OF_CREATED_PLAYER = 0;
-
 	private int healthPoint;
-
 	private int mana;
-
-
 	private Deck deck;
-
 	private Hand hand;
-
 	private Board board;
-
 	private Player opponentPlayer;
-
-	private int playerNumber;
-	
-	private PlayerEntryInterface playerEntryInterface;
-	
+	private int playerNumber;	
+	private PlayerEntryInterface playerEntryInterface;	
 	private PlayerDisplayInterface playerDisplayInterface;
 
 	public Player(boolean p_class, PlayerEntryInterface p_playerEntryInterface, PlayerDisplayInterface p_playerDisplayInterface)
@@ -46,7 +32,6 @@ public class Player
 			this.deck = new Deck(new CardFileReader(p_class).returnCardList());
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.hand = new Hand();
@@ -59,10 +44,8 @@ public class Player
 		
 		NUMBER_OF_CREATED_PLAYER++;
 		this.playerNumber = NUMBER_OF_CREATED_PLAYER;
-		
 		this.opponentPlayer = null;
-	}
-	
+	}	
 
 	public void setMana(int p_mana)
 	{
@@ -76,14 +59,9 @@ public class Player
 
 	public void selectAction()
 	{
-
-			while (true)
+		while (true)
 			{
-				this.playerDisplayInterface.displayPLayerState(this.healthPoint, this.mana);
-				this.playerDisplayInterface.refreshFullDisplay();
-				this.opponentPlayer.playerDisplayInterface.refreshFullDisplay();
-				
-				this.playerDisplayInterface.displayChoices();
+				DisplayGame();
 				int choice = this.playerEntryInterface.selectAction();
 				
 
@@ -117,6 +95,14 @@ public class Player
 				}
 
 			}
+	}
+
+	private void DisplayGame() {
+		this.playerDisplayInterface.displayPLayerState(this.healthPoint, this.mana);
+		this.playerDisplayInterface.refreshFullDisplay();
+		this.opponentPlayer.playerDisplayInterface.refreshFullDisplay();
+		
+		this.playerDisplayInterface.displayChoices();
 	}
 	
 	public void drawACard()
@@ -254,154 +240,151 @@ public class Player
 			if (this.mana >= p_spell.getManaCost())
 			{
 				if (p_spell.returnSpellTarget().equals("Soi-même (joueur)"))
-				{
-
-					this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
-					this.addLifePoints(p_spell.returnEffect());
-
-				}
+					useSpellOnOurself(p_spell);
 				else if (p_spell.returnSpellTarget().equals("Joueur ennemi"))
-				{
-					
-					this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
-					this.changeOpponentLife(p_spell.returnEffect());
-				}
+					useSpellOnEnnemyPlayer(p_spell);
 				else if (p_spell.returnSpellTarget().equals("Soi-même (joueur ou invocation)"))
-				{
-					this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
-					
-					if (this.board.getInvocationNumber() != 0)
-					{
-						this.playerDisplayInterface.displayCurrentPlayerAsATarget();
-						this.playerDisplayInterface.displayBoard(this.board,false);
-						
-						boolean isAttribute = false;
-						do 
-						{
-							this.playerDisplayInterface.displayWaitingForAChoice();
-							
-							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInCurrentPlayerBoardOrCurrentPlayerHimself(this.board);
-							
-							if (invocationToFocus != null)
-							{
-								int targetLife = invocationToFocus.changeLife(p_spell.returnEffect() * (-1));
-								isAttribute = true;
-							}
-							else
-							{
-								this.addLifePoints(p_spell.returnEffect());
-								isAttribute = true;
-							}							
-							
-						} while (!isAttribute);
-					
-					}
-					else
-					{
-						this.playerDisplayInterface.displayNoOtherTargetThanCurrentPlayerForThisSpell();
-						this.addLifePoints(p_spell.returnEffect());
-					}				
-					
-				}
+					useSpellOnOurSide(p_spell);
 				else if (p_spell.returnSpellTarget().equals("Invocation ennemie"))
-				{
-					this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
-					
-					if (this.opponentPlayer.board.getInvocationNumber() == 0)
-					{
-						this.playerDisplayInterface.displayNoTargetAvailableForThisSpell();
-					}
-					else
-					{
-						this.playerDisplayInterface.displayBoard(this.opponentPlayer.board,false);
-						
-						boolean isAttribute = false;
-						do 
-						{
-							this.playerDisplayInterface.displayWaitingForAChoice();
-							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoard(this.opponentPlayer.board);
-							
-							if (invocationToFocus != null)
-							{
-								
-								int targetLife = invocationToFocus.changeLife(p_spell.returnEffect());
-								if (targetLife <= 0)
-								{
-									this.opponentPlayer.board.removeInvocationFromBoard(invocationToFocus);
-								}
-								
-								isAttribute = true;
-							}
-							else
-							{
-								this.playerDisplayInterface.displayNotValidCard();
-							}
-							
-							
-						}  while (!isAttribute);
-					}
-					
-				}
+					useSpellOnEnnemyInvocation(p_spell);
 				else if (p_spell.returnSpellTarget().equals("Cible ennemie"))
-				{
-					this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
-					
-					if (this.opponentPlayer.board.getInvocationNumber() == 0)
-					{
-						this.playerDisplayInterface.displayNoOtherTargetThanOpponentForThisSpell();
-						this.changeOpponentLife(p_spell.returnEffect());
-					}
-					else
-					{
-						this.playerDisplayInterface.displayOpponentAsATarget();
-						this.playerDisplayInterface.displayBoard(this.opponentPlayer.board,false);
-						
-						boolean isAttribute = false;
-						do 
-						{
-							this.playerDisplayInterface.displayWaitingForAChoice();
-							
-							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoardOrOpponentHimself(this.opponentPlayer.board);
-							
-							if (invocationToFocus == null)
-							{
-								this.changeOpponentLife(p_spell.returnEffect());
-								isAttribute = true;
-							}
-							else
-							{
-								int targetLife = invocationToFocus.changeLife(p_spell.returnEffect());
-								
-								if (targetLife <= 0)
-								{
-									this.opponentPlayer.board.removeInvocationFromBoard(invocationToFocus);
-								}
-								
-								isAttribute = true;
-							}
-							
-						} while(!isAttribute);
-					}
-				}
+					useSpellOnEnnemy(p_spell);
 				
 				
 				this.mana -= p_spell.getManaCost();
 				this.hand.removeCard(p_spell);
-				//this.playerDisplayInterface.displayHand(this.hand);
-				new Audio(3).start();
+				new Audio(3).start();			
+			}
+			else
+				this.playerDisplayInterface.displayNotEnoughManaMessage();			
+		}
+		else
+			this.playerDisplayInterface.displayNotValidCard();
+	}
+
+	private void useSpellOnOurself(Spell p_spell) {
+			this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
+			this.addLifePoints(p_spell.returnEffect());
+	}
+
+	private void useSpellOnEnnemyPlayer(Spell p_spell) {
+			this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
+			this.changeOpponentLife(p_spell.returnEffect());
+	}
+
+	private void useSpellOnOurSide(Spell p_spell) {
+			this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
+			if (this.board.getInvocationNumber() != 0)
+			{
+				this.playerDisplayInterface.displayCurrentPlayerAsATarget();
+				this.playerDisplayInterface.displayBoard(this.board,false);
 				
+				boolean isAttribute = false;
+				do 
+				{
+					this.playerDisplayInterface.displayWaitingForAChoice();
+					
+					Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInCurrentPlayerBoardOrCurrentPlayerHimself(this.board);
+					
+					if (invocationToFocus != null)
+					{
+						int targetLife = invocationToFocus.changeLife(p_spell.returnEffect() * (-1));
+						isAttribute = true;
+					}
+					else
+					{
+						this.addLifePoints(p_spell.returnEffect());
+						isAttribute = true;
+					}							
+					
+				} while (!isAttribute);
+			
 			}
 			else
 			{
-				this.playerDisplayInterface.displayNotEnoughManaMessage();
+				this.playerDisplayInterface.displayNoOtherTargetThanCurrentPlayerForThisSpell();
+				this.addLifePoints(p_spell.returnEffect());
+			}				
+	}
+
+	private void useSpellOnEnnemyInvocation(Spell p_spell) {
+			this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
+			
+			if (this.opponentPlayer.board.getInvocationNumber() == 0)
+			{
+				this.playerDisplayInterface.displayNoTargetAvailableForThisSpell();
+			}
+			else
+			{
+				this.playerDisplayInterface.displayBoard(this.opponentPlayer.board,false);
+				
+				boolean isAttribute = false;
+				do 
+				{
+					this.playerDisplayInterface.displayWaitingForAChoice();
+					Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoard(this.opponentPlayer.board);
+					
+					if (invocationToFocus != null)
+					{
+						
+						int targetLife = invocationToFocus.changeLife(p_spell.returnEffect());
+						if (targetLife <= 0)
+						{
+							this.opponentPlayer.board.removeInvocationFromBoard(invocationToFocus);
+						}
+						
+						isAttribute = true;
+					}
+					else
+					{
+						this.playerDisplayInterface.displayNotValidCard();
+					}
+					
+					
+				}  while (!isAttribute);
 			}
 			
-		}
-		else
-		{
-			this.playerDisplayInterface.displayNotValidCard();
-		}
-	
+	}
+
+	private void useSpellOnEnnemy(Spell p_spell) {
+			this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
+			
+			if (this.opponentPlayer.board.getInvocationNumber() == 0)
+			{
+				this.playerDisplayInterface.displayNoOtherTargetThanOpponentForThisSpell();
+				this.changeOpponentLife(p_spell.returnEffect());
+			}
+			else
+			{
+				this.playerDisplayInterface.displayOpponentAsATarget();
+				this.playerDisplayInterface.displayBoard(this.opponentPlayer.board,false);
+				
+				boolean isAttribute = false;
+				do 
+				{
+					this.playerDisplayInterface.displayWaitingForAChoice();
+					
+					Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoardOrOpponentHimself(this.opponentPlayer.board);
+					
+					if (invocationToFocus == null)
+					{
+						this.changeOpponentLife(p_spell.returnEffect());
+						isAttribute = true;
+					}
+					else
+					{
+						int targetLife = invocationToFocus.changeLife(p_spell.returnEffect());
+						
+						if (targetLife <= 0)
+						{
+							this.opponentPlayer.board.removeInvocationFromBoard(invocationToFocus);
+						}
+						
+						isAttribute = true;
+					}
+					
+				} while(!isAttribute);
+			}
 	}
 	
 	

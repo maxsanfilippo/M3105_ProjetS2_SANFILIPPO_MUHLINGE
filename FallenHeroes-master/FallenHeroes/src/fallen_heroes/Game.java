@@ -3,17 +3,11 @@ package fallen_heroes;
 public class Game
 {
 	private Player player1;
-
 	private Player player2;
-	
-	private PlayerEntryInterface playerEntryInterface1;
-	
-	private PlayerDisplayInterface playerDisplayInterface1;
-	
-	private PlayerEntryInterface playerEntryInterface2;
-	
-	private PlayerDisplayInterface playerDisplayInterface2;
-	
+	private PlayerEntryInterface playerEntryInterface1;	
+	private PlayerDisplayInterface playerDisplayInterface1;	
+	private PlayerEntryInterface playerEntryInterface2;	
+	private PlayerDisplayInterface playerDisplayInterface2;	
 	private int turnsNumber;
 
 	public Game(PlayerEntryInterface p_playerEntryInterface1, PlayerDisplayInterface p_playerDisplayInterface1, 
@@ -48,7 +42,6 @@ public class Game
 			p_playerDisplayInterface.displayPossibleDeckChoices(p_playerNumber);
 			choice = p_playerEntryInterface.selectDeck();
 		} while (choice != 1 && choice != 2);
-		
 		
 		if (choice == 1)
 			return true;
@@ -88,11 +81,9 @@ public class Game
 		if (p_player.equals(this.player1))
 		{
 			this.playerEntryInterface1.setCurrentPlayerAndRefresh(this.player1);
-			//this.playerEntryInterface2.setCurrentPlayer(this.player1);
 		}
 		else
 		{
-			//this.playerEntryInterface1.setCurrentPlayer(this.player2);
 			this.playerEntryInterface2.setCurrentPlayerAndRefresh(this.player2);
 		}
 
@@ -101,13 +92,9 @@ public class Game
 	
 	private void manaIncrement(Player p_player)
 	{
-	
 		int manaMultiplier = (int)((this.turnsNumber / 5)+1);
-	
 		if (manaMultiplier > 3)
-		{
 			manaMultiplier = 3;
-		}
 	
 		int newMana = p_player.getMana() + (1 * manaMultiplier);
 		if (newMana > 10)
@@ -121,6 +108,4 @@ public class Game
 		if (this.player1.getLife() == 0) return this.player2;
 		return this.player1;
 	}
-	
-
 }

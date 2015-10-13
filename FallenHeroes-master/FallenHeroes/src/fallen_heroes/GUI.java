@@ -10,39 +10,22 @@ import javax.swing.*;
 public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface, PlayerEntryInterface, Runnable
 {
 	private static final int CARD_X_ALIGNMENT = 243;
-
 	private GraphicalCard[] cardsInHandOfCurrentPlayer;
-
 	private GraphicalCard[] cardsOnBoardOfCurrentPlayer;
-
-	private GraphicalCard[] cardsInHandOfCurrentPlayerOpponent;
-	
+	private GraphicalCard[] cardsInHandOfCurrentPlayerOpponent;	
 	private GraphicalCard[] cardsOnBoardOfCurrentPlayerOpponent;
-	
-	private GraphicalBigCard bigCardOnTheSide;
-	
+	private GraphicalBigCard bigCardOnTheSide;	
 	private JLabel labelMana;
-
 	private JLabel labelAttackCard;
-
 	private JLabel labelLifeCard;
-
-	private JProgressBar progressBarOpponentLife;
-	
+	private JProgressBar progressBarOpponentLife;	
 	private JProgressBar progressBarCurrentPlayerLife;
-
 	private BackgroundPanel backgroundPanel;
-
 	private JButton nextTurn;
-
 	private Player currentPlayer;
-	
 	private JLabel[] labelCurrentPlayerMana;
-	
 	private volatile boolean isActionSelected;
-	
 	private int actionSelected;
-	
 	private Card lastCardClicked;
 
 	public GUI()

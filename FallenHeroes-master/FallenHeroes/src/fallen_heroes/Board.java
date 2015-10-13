@@ -12,9 +12,7 @@ public class Board
 
 	public Board()
 	{
-		this.numberOfLaidInvocations = 0;
-
-		
+		this.numberOfLaidInvocations = 0;	
 		this.boardCards = new LinkedList<Invocation>();
 	}
 	
