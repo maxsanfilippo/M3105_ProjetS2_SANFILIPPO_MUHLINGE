@@ -26,16 +26,16 @@ public class BoardTest extends TestCase
 	{
 		assertEquals(board.getInvocationsNumber() == 0, true);
 		assertEquals(board.getInvocationsNumber() != 0, false);
-		board.addInvocation(null);
+		board.addInvocationOnBoard(null);
 		assertEquals(board.getInvocationsNumber() == 1, true);
 		assertEquals(board.getInvocationsNumber() != 1, false);
-		board.addInvocation(null);
-		board.addInvocation(null);
-		board.addInvocation(null);
-		board.addInvocation(null);
+		board.addInvocationOnBoard(null);
+		board.addInvocationOnBoard(null);
+		board.addInvocationOnBoard(null);
+		board.addInvocationOnBoard(null);
 		assertEquals(board.getInvocationsNumber() == 5, true);
 		assertEquals(board.getInvocationsNumber() != 5, false);
-		board.addInvocation(null);
+		board.addInvocationOnBoard(null);
 		assertEquals(board.getInvocationsNumber() == 5, true);
 		assertEquals(board.getInvocationsNumber() != 5, false);
 	}

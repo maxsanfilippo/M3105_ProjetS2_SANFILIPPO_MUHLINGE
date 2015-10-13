@@ -36,13 +36,7 @@ public class PlayerEntryConsole implements PlayerEntryInterface
 		String choice = sc.nextLine();
 		return choice;
 	}
-	
 
-	/**
-	 * Check if the String in parameter could be cast into a Integer or not
-	 * @param p_entry : the String to test
-	 * @return true is it could, false otherwise
-	 */
 	public boolean entryIsNumeric(String p_entry)
 	{
 		try
@@ -56,7 +50,6 @@ public class PlayerEntryConsole implements PlayerEntryInterface
 		
 		return true;
 	}
-
 
 
 	public Invocation choseInvocationInYourBoard(Board p_board)
@@ -146,7 +139,7 @@ public class PlayerEntryConsole implements PlayerEntryInterface
 
 
 	@Override
-	public void setCurrentPlayer(Player p_player)
+	public void setCurrentPlayerAndRefresh(Player p_player)
 	{
 		// TODO Auto-generated method stub
 		

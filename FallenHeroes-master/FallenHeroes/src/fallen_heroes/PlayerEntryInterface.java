@@ -20,6 +20,6 @@ public interface PlayerEntryInterface
 	
 	public int selectDeck();
 	
-	public void setCurrentPlayer(Player p_player);
+	public void setCurrentPlayerAndRefresh(Player p_player);
 
 }

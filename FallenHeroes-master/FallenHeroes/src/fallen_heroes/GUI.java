@@ -7,91 +7,46 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-/**
- * Window which will contain all the game items to display (cards, background...)
- * @author chamboug
- *
- */
 public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface, PlayerEntryInterface, Runnable
 {
 	private static final int CARD_X_ALIGNMENT = 243;
-	/**
-	 * Cards in hand of the current player
-	 */
+
 	private GraphicalCard[] cardsInHandOfCurrentPlayer;
-	/**
-	 * Cards on board of the current player
-	 */
+
 	private GraphicalCard[] cardsOnBoardOfCurrentPlayer;
-	
-	/**
-	 * Cards in hand of the current player's opponent
-	 */
+
 	private GraphicalCard[] cardsInHandOfCurrentPlayerOpponent;
-	/**
-	 * Cards on board of the current player's opponent
-	 */
+	
 	private GraphicalCard[] cardsOnBoardOfCurrentPlayerOpponent;
 	
-	
-	/**
-	 * The big card which will display a bigger image of cards when mouse will be hover
-	 */
 	private GraphicalBigCard bigCardOnTheSide;
 	
-	
-	
-	/**
-	 * Label containing the current mana state of the player
-	 */
 	private JLabel labelMana;
-	/**
-	 * Label containing the attack points of the current card
-	 */
+
 	private JLabel labelAttackCard;
-	/**
-	 * Label containing the life points of the current card
-	 */
+
 	private JLabel labelLifeCard;
-	
-	
-	
-	
+
 	private JProgressBar progressBarOpponentLife;
 	
 	private JProgressBar progressBarCurrentPlayerLife;
-	
-	/**
-	 * Background panel containing the background image
-	 */
+
 	private BackgroundPanel backgroundPanel;
-	
-	/**
-	 * Button to skip the turn
-	 */
+
 	private JButton nextTurn;
-	
-	/**
-	 * The current player
-	 */
+
 	private Player currentPlayer;
 	
 	private JLabel[] labelCurrentPlayerMana;
-
-	
 	
 	private volatile boolean isActionSelected;
 	
 	private int actionSelected;
 	
 	private Card lastCardClicked;
-	
-	/**
-	 * Initialize the new window by disposing background panel, and buttons and labels which will contain the cards 
-	 */
+
 	public GUI()
 	{
-
 		
 		//Creation of the background panel
 		this.backgroundPanel = new BackgroundPanel();
@@ -108,8 +63,8 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 
 		
 	    //Creating and disposing cards of current player hand
-		this.cardsInHandOfCurrentPlayer = new GraphicalCard[Hand.MAXIMAL_NUMBER_OF_CARDS_IN_HAND];
-		for (int currentCardNumber = 0; currentCardNumber < Hand.MAXIMAL_NUMBER_OF_CARDS_IN_HAND; currentCardNumber++)
+		this.cardsInHandOfCurrentPlayer = new GraphicalCard[Hand.MAXIMAL_CARDS_NUMBER_IN_HAND];
+		for (int currentCardNumber = 0; currentCardNumber < Hand.MAXIMAL_CARDS_NUMBER_IN_HAND; currentCardNumber++)
 		{
 			this.cardsInHandOfCurrentPlayer[currentCardNumber] = new GraphicalCard(CARD_X_ALIGNMENT + (GraphicalCard.CARD_WIDTH + 5) * currentCardNumber,590, "main1" + (currentCardNumber+1));
 			this.cardsInHandOfCurrentPlayer[currentCardNumber].setVisible(false);
@@ -118,8 +73,8 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 		}
 		
 		//Creating and disposing cards of current player opponent hand
-		this.cardsInHandOfCurrentPlayerOpponent = new GraphicalCard[Hand.MAXIMAL_NUMBER_OF_CARDS_IN_HAND];
-		for (int currentCardNumber = 0; currentCardNumber < Hand.MAXIMAL_NUMBER_OF_CARDS_IN_HAND; currentCardNumber++)
+		this.cardsInHandOfCurrentPlayerOpponent = new GraphicalCard[Hand.MAXIMAL_CARDS_NUMBER_IN_HAND];
+		for (int currentCardNumber = 0; currentCardNumber < Hand.MAXIMAL_CARDS_NUMBER_IN_HAND; currentCardNumber++)
 		{
 			this.cardsInHandOfCurrentPlayerOpponent[currentCardNumber] = new GraphicalCard(CARD_X_ALIGNMENT + (GraphicalCard.CARD_WIDTH + 5) * currentCardNumber, -GraphicalCard.CARD_HEIGHT + 84, "main2" + (currentCardNumber+1));
 			this.cardsInHandOfCurrentPlayerOpponent[currentCardNumber].setVisible(false);
@@ -244,27 +199,23 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 		this.setContentPane(this.backgroundPanel);
 	}
 	
-	public void setCurrentPlayer(Player p_player)
+	public void setCurrentPlayerAndRefresh(Player p_player)
 	{
 		this.currentPlayer = p_player;
 		this.refreshFullDisplay();
 	}
 	
-
 	@Override
 	public void run()
 	{
 		this.setVisible(true);
 	}
 	
-	
-
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
-
-		
-		for (int currentCardNumber = 0; currentCardNumber < Hand.MAXIMAL_NUMBER_OF_CARDS_IN_HAND; currentCardNumber++)
+	
+		for (int currentCardNumber = 0; currentCardNumber < Hand.MAXIMAL_CARDS_NUMBER_IN_HAND; currentCardNumber++)
 		{
 			if (e.getSource() == this.cardsInHandOfCurrentPlayer[currentCardNumber])
 			{
@@ -302,23 +253,18 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 			this.isActionSelected = true;
 			//this.setCurrentPlayer(this.currentPlayer.getOpponent());
 
-
 		}
 		
-
 		this.refreshFullDisplay();
 		
-
-		
 	}
-
 
 
 	@Override
 	public void mouseEntered(MouseEvent e)
 	{
 		
-		for (int currentCardNumber = 0; currentCardNumber < Hand.MAXIMAL_NUMBER_OF_CARDS_IN_HAND; currentCardNumber++)
+		for (int currentCardNumber = 0; currentCardNumber < Hand.MAXIMAL_CARDS_NUMBER_IN_HAND; currentCardNumber++)
 		{
 			if (e.getSource() == this.cardsInHandOfCurrentPlayer[currentCardNumber])
 			{
@@ -328,8 +274,7 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 				
 				if (!this.bigCardOnTheSide.isVisible())
 					this.bigCardOnTheSide.setVisible(true);
-			}
-			
+			}	
 		}
 		
 		for (int currentCardNumber = 0; currentCardNumber < Board.MAXIMAL_INVOCATION_NUMBER; currentCardNumber++)
@@ -342,8 +287,7 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 				
 				if (!this.bigCardOnTheSide.isVisible())
 					this.bigCardOnTheSide.setVisible(true);
-			}
-			
+			}			
 		}
 		
 		for (int currentCardNumber = 0; currentCardNumber < Board.MAXIMAL_INVOCATION_NUMBER; currentCardNumber++)
@@ -356,18 +300,14 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 				
 				if (!this.bigCardOnTheSide.isVisible())
 					this.bigCardOnTheSide.setVisible(true);
-			}
-			
-		}
-		
-
+			}		
+		}	
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
@@ -384,10 +324,6 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 		
 	}
 	
-	
-	/**
-	 * Refresh all the cards in all hands and board + mana label
-	 */
 	public void refreshFullDisplay()
 	{
 		this.displayCurrentPlayerHand();
@@ -425,8 +361,7 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 		{
 			this.cardsOnBoardOfCurrentPlayerOpponent[currentCard].refreshLabels();
 		}
-		
-		
+			
 	}
 	
 	public void displayCurrentPlayerMana()
@@ -453,10 +388,6 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 		}
 	}
 	
-	/**
-	 * Refresh attack and life label of the card in parameter
-	 * @param p_card the card to pick attack points and life points
-	 */
 	public void refreshAttackAndLifeLabels(Card p_card)
 	{
 		if (p_card instanceof Invocation)
@@ -472,12 +403,7 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 		
 		
 	}
-	
 
-	
-	/**
-	 * Refresh cards to display in the current player's hand
-	 */
 	public void displayCurrentPlayerHand()
 	{
 		for (int currentCardNumber = 0; currentCardNumber < this.currentPlayer.getNumberOfCardsInTheHand(); currentCardNumber++)
@@ -485,15 +411,12 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 			this.cardsInHandOfCurrentPlayer[currentCardNumber].associateCard(this.currentPlayer.getCardInHand(currentCardNumber+1));
 			this.cardsInHandOfCurrentPlayer[currentCardNumber].setVisible(true);
 		}
-		for (int i = this.currentPlayer.getNumberOfCardsInTheHand(); i < Hand.MAXIMAL_NUMBER_OF_CARDS_IN_HAND; i++)
+		for (int i = this.currentPlayer.getNumberOfCardsInTheHand(); i < Hand.MAXIMAL_CARDS_NUMBER_IN_HAND; i++)
 		{
 			this.cardsInHandOfCurrentPlayer[i].setVisible(false);
 		}
 	}
-	
-	/**
-	 * Refresh cards to display on the current player's board
-	 */
+
 	public void displayCurrentPlayerBoard()
 	{
 		for (int currentCardNumber = 0; currentCardNumber < this.currentPlayer.getNumberOfCardOnTheBoard(); currentCardNumber++)
@@ -506,10 +429,7 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 			this.cardsOnBoardOfCurrentPlayer[currentCardNumber].setVisible(false);
 		}
 	}
-	
-	/**
-	 * Refresh cards to display in the current player's opponent hand
-	 */
+
 	public void displayPlayerOpponentHand()
 	{
 		for (int currentCardNumber = 0; currentCardNumber < this.currentPlayer.getOpponent().getNumberOfCardsInTheHand(); currentCardNumber++)
@@ -517,15 +437,12 @@ public class GUI extends JFrame implements MouseListener, PlayerDisplayInterface
 			this.cardsInHandOfCurrentPlayerOpponent[currentCardNumber].associateCard(null);
 			this.cardsInHandOfCurrentPlayerOpponent[currentCardNumber].setVisible(true);
 		}
-		for (int i = this.currentPlayer.getOpponent().getNumberOfCardsInTheHand(); i < Hand.MAXIMAL_NUMBER_OF_CARDS_IN_HAND; i++)
+		for (int i = this.currentPlayer.getOpponent().getNumberOfCardsInTheHand(); i < Hand.MAXIMAL_CARDS_NUMBER_IN_HAND; i++)
 		{
 			this.cardsInHandOfCurrentPlayerOpponent[i].setVisible(false);
 		}
 	}
-	
-	/**
-	 * Refresh cards to display on the current player's opponent board
-	 */
+
 	public void displayPlayerOpponentBoard()
 	{
 		for (int currentCardNumber = 0; currentCardNumber < this.currentPlayer.getOpponent().getNumberOfCardOnTheBoard(); currentCardNumber++)

@@ -1,21 +1,10 @@
 package fallen_heroes;
 
-/**
- * The class of a game we can play
- * @author Group 6
- */
 public class Game
 {
-	/**
-	 * The first player
-	 */
 	private Player player1;
-	
-	/**
-	 * the second player
-	 */ 
+
 	private Player player2;
-	
 	
 	private PlayerEntryInterface playerEntryInterface1;
 	
@@ -25,15 +14,8 @@ public class Game
 	
 	private PlayerDisplayInterface playerDisplayInterface2;
 	
-	/**
-	 * Number of turns
-	 */
 	private int turnsNumber;
 
-	
-	/**
-	 * Initializes the game with defining each feature a game
-	 */
 	public Game(PlayerEntryInterface p_playerEntryInterface1, PlayerDisplayInterface p_playerDisplayInterface1, 
 			    PlayerEntryInterface p_playerEntryInterface2, PlayerDisplayInterface p_playerDisplayInterface2)
 	{
@@ -50,7 +32,7 @@ public class Game
 		this.player1.defineOpponent(this.player2);
 		this.player2.defineOpponent(this.player1);
 
-		p_playerEntryInterface1.setCurrentPlayer(player1);
+		p_playerEntryInterface1.setCurrentPlayerAndRefresh(player1);
 
 		this.turnsNumber = 1;
 
@@ -74,9 +56,6 @@ public class Game
 		return false;
 	}
 	
-	/**
-	 * Display the logo and do a turn loop 
-	 */
 	public void play()
 	{
 
@@ -108,23 +87,18 @@ public class Game
 		
 		if (p_player.equals(this.player1))
 		{
-			this.playerEntryInterface1.setCurrentPlayer(this.player1);
+			this.playerEntryInterface1.setCurrentPlayerAndRefresh(this.player1);
 			//this.playerEntryInterface2.setCurrentPlayer(this.player1);
 		}
 		else
 		{
 			//this.playerEntryInterface1.setCurrentPlayer(this.player2);
-			this.playerEntryInterface2.setCurrentPlayer(this.player2);
+			this.playerEntryInterface2.setCurrentPlayerAndRefresh(this.player2);
 		}
 
 		p_player.selectAction();
 	}
 	
-
-	
-	/**
-	 * Increment the mana based on game turns
-	 */
 	private void manaIncrement(Player p_player)
 	{
 	
@@ -139,16 +113,10 @@ public class Game
 		if (newMana > 10)
 			newMana = 10;
 		
-		p_player.defineMana(newMana);
+		p_player.setMana(newMana);
 	}
-	
 
-
-	/**
-	 * Search the player who won the game
-	 * @return the player who won the game
-	 */
-	public Player searchVictorious()
+	public Player searchVictoriousPlayer()
 	{
 		if (this.player1.getLife() == 0) return this.player2;
 		return this.player1;

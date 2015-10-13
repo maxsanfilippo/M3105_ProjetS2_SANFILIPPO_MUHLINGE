@@ -99,7 +99,7 @@ public class PlayerDisplayConsole implements PlayerDisplayInterface
 	
 	public void displayBoard(Board p_board, boolean p_displayOutline)
 	{
-		System.out.println(p_board.returnBoard(p_displayOutline));
+		System.out.println(p_board.returnTextRepresentationOfTheBoard(p_displayOutline));
 	}
 	
 	public void displayWaitingForAChoice()

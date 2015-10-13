@@ -5,41 +5,20 @@ import java.awt.Image;
 
 import javax.swing.*;
 
-
-
-
-
-/**
- * Button which will contain an card image (for hand and board)
- * @author Gaetan
- *
- */
 public class GraphicalCard extends JButton
 {
-	/**
-	 * Width of a card in pixel
-	 */
+
 	public final static int CARD_WIDTH = 175;
-	/**
-	 * Height of a card in pixel
-	 */
+
 	public final static int CARD_HEIGHT = 233;
 	
 	private JLabel labelAttack;
 	
 	private JLabel labelLife;
 	
-	/**
-	 * Associated card to the button
-	 */
+
 	private Card associatedCard;
-	
-	/**
-	 * Create new button
-	 * @param x : x location on screen in pixel
-	 * @param y : y location on screen in pixel
-	 * @param p_name : name of this button
-	 */
+
 	public GraphicalCard(int x, int y, String p_name)
 	{
 		super();
@@ -71,10 +50,6 @@ public class GraphicalCard extends JButton
 		this.setBackground(new Color(0,true));
 	}
 	
-	/**
-	 * Associate a card to a button and display it image
-	 * @param p_card : the carte to associate
-	 */
 	public void associateCard(Card p_card)
 	{
 		this.associatedCard = p_card;
@@ -109,13 +84,6 @@ public class GraphicalCard extends JButton
 
 	}
 	
-	
-	
-	
-	/**
-	 * Return the current card associated to the button
-	 * @return this.associatedCard : the current card
-	 */
 	public Card getCard()
 	{
 		return this.associatedCard;

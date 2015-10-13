@@ -1,92 +1,38 @@
 package fallen_heroes;
 import java.io.IOException;
 
-
-
-/**
- * A player which have is own hand, board, and deck, and who will play the game
- * @author chamboug
- *
- */
 public class Player
 {
 
-
-	
-	/**
-	 * Initial life points of the beginning of the game
-	 */
 	public final static int INITIAL_LIFE_POINT = 20;
-	/**
-	 * Initial mana points of the beginning of the game
-	 */
+
 	public final static int MANA_INITIAL_NUMBER = 5;
 	
 	public static final int MAXIMAL_MANA_NUMBER = 10;
-	
 
-	/**
-	 * Initial number of cards of each player when the game starts
-	 */
 	public final static int INITIAL_CARD_NUMBER = 3;
-	
-	
-	/**
-	 * Counter of players
-	 */
-	public static int NUMBER_OF_CREATED_PLAYER = 0;
-	
 
-	/**
-	 * Current health points of the player
-	 */
+	public static int NUMBER_OF_CREATED_PLAYER = 0;
+
 	private int healthPoint;
 
-	/**
-	 * Current state of mana
-	 */
 	private int mana;
 
-	
-	
-	
-	/**
-	 * Deck of the player
-	 */
-	private Deck deck;
-	/**
-	 * Hand of the player
-	 */
-	private Hand hand;
-	/**
-	 * Board of the player
-	 */
-	private Board board;
-	
-	/**
-	 * Opponent of the current player
-	 */
-	private Player opponent;
-	
 
-	/**
-	 * Unique number associated to each player
-	 */
+	private Deck deck;
+
+	private Hand hand;
+
+	private Board board;
+
+	private Player opponentPlayer;
+
 	private int playerNumber;
-	
 	
 	private PlayerEntryInterface playerEntryInterface;
 	
 	private PlayerDisplayInterface playerDisplayInterface;
 
-	
-	/**
-	 * Initialize the player with all constants about initial state and with the parameters p_classes and p_isHuman
-	 * @param p_classes : class (light or dark)
-	 * @param playerDisplayInterface 
-	 * @param playerEntryInterface 
-	 * @param p_isHuman : define if the player is real or a computer
-	 */
 	public Player(boolean p_class, PlayerEntryInterface p_playerEntryInterface, PlayerDisplayInterface p_playerDisplayInterface)
 	{
 		this.healthPoint = INITIAL_LIFE_POINT;
@@ -114,30 +60,20 @@ public class Player
 		NUMBER_OF_CREATED_PLAYER++;
 		this.playerNumber = NUMBER_OF_CREATED_PLAYER;
 		
-		this.opponent = null;
+		this.opponentPlayer = null;
 	}
 	
-	/**
-	 * Change the value of the mana
-	 * @param p_mana : the new quantity of mana
-	 */
-	public void defineMana(int p_mana)
+
+	public void setMana(int p_mana)
 	{
 		this.mana = p_mana;
 	}
-	
-	/**
-	 * Get the current life for the player
-	 * @return this.healthPoint : current life for the player
-	 */
+
 	public int getLife()
 	{
 		return this.healthPoint;
 	}
-	
-	/**
-	 * The interface to allow the player to choose an action
-	 */
+
 	public void selectAction()
 	{
 
@@ -145,7 +81,7 @@ public class Player
 			{
 				this.playerDisplayInterface.displayPLayerState(this.healthPoint, this.mana);
 				this.playerDisplayInterface.refreshFullDisplay();
-				this.opponent.playerDisplayInterface.refreshFullDisplay();
+				this.opponentPlayer.playerDisplayInterface.refreshFullDisplay();
 				
 				this.playerDisplayInterface.displayChoices();
 				int choice = this.playerEntryInterface.selectAction();
@@ -157,13 +93,13 @@ public class Player
 				}
 				else if (choice == 2)
 				{
-					this.playerDisplayInterface.displayBoard(this.opponent.board, true);
+					this.playerDisplayInterface.displayBoard(this.opponentPlayer.board, true);
 					this.playerDisplayInterface.displayBoard(this.board, true);
 				}
 				else if (choice == 3)
 				{
 					this.playerDisplayInterface.displayWaitingForAChoice();
-					this.poseInvocation(this.playerEntryInterface.choseInvocationInHand(this.hand));
+					this.poseInvocationOnBoard(this.playerEntryInterface.choseInvocationInHand(this.hand));
 				}
 				else if (choice == 4)
 				{
@@ -173,7 +109,7 @@ public class Player
 				else if (choice == 5)
 				{
 					this.playerDisplayInterface.displayWaitingForAChoice();
-					this.attack(this.playerEntryInterface.choseInvocationInCurrentPlayerBoardToAttack(this.board));
+					this.attackWithAnInvocationOnTheBoard(this.playerEntryInterface.choseInvocationInCurrentPlayerBoardToAttack(this.board));
 				}
 				else
 				{
@@ -181,48 +117,31 @@ public class Player
 				}
 
 			}
-
-
-
 	}
 	
-	/**
-	 * The action of the player of picking the next card of his deck
-	 */
 	public void drawACard()
 	{
-		Card drawedCard = this.deck.retrieveHeadCard();
+		Card drawedCard = this.deck.retrieveHeadCardOfTheDeck();
 		
 		if (drawedCard != null)
-			this.hand.addACard(drawedCard);
+			this.hand.addACardInHand(drawedCard);
 	}
 	
 
-	
-	
-	/**
-	 * Allow the player to pose an invocation on the board. It contains :
-	 * - a choice of the card with checking if it is exists in the hand and if it is an instance of Invocation
-	 * - a choice of the creature with checking mana state
-	 * - it check if the Invocation to pose have a special capacity like "confération" or "cri de guerre", and if needed, apply the special capacity
-	 * - pose the creature on the player's board
-	 */
-	private void poseInvocation(Invocation p_invocationToPose)
+	private void poseInvocationOnBoard(Invocation p_invocationToPose)
 	{
 		
 		if (p_invocationToPose != null)
 		{
 			if (this.mana >= p_invocationToPose.getManaCost())
 			{
-
-				
 				
 				if (this.getNumberOfCardOnTheBoard() != Board.MAXIMAL_INVOCATION_NUMBER)
 				{
 					this.mana -= p_invocationToPose.getManaCost();
 					
-					this.board.addInvocation(p_invocationToPose);
-					p_invocationToPose.doHisFirstTurn();
+					this.board.addInvocationOnBoard(p_invocationToPose);
+					p_invocationToPose.doItsFirstTurn();
 
 
 					if (p_invocationToPose.returnCapacity().equals("conferation"))
@@ -240,7 +159,7 @@ public class Player
 							
 							if (invocationToAffect != null)
 							{
-								invocationToAffect.affectTheSpecialCapacity(p_invocationToPose.returnConferationCapacity());
+								invocationToAffect.affectTheCapacity(p_invocationToPose.returnConferationCapacity());
 								capacityWasAffected = true;
 							}
 							else
@@ -250,10 +169,7 @@ public class Player
 							
 							
 						} while (!capacityWasAffected);
-						
-						
-						
-						
+												
 					}
 					else if (p_invocationToPose.returnCapacity().equals("cri de guerre"))
 					{
@@ -269,7 +185,7 @@ public class Player
 						boolean criDeGuerreWasUsed = false;
 						do 
 						{
-							if (this.opponent.getNumberOfCardOnTheBoard() == 0)
+							if (this.opponentPlayer.getNumberOfCardOnTheBoard() == 0)
 							{
 								this.playerDisplayInterface.displayNoOtherTargetThanOpponentForCriDeGuerreCapacity();
 								this.changeOpponentLife(CriDeGuerreEffect);
@@ -277,11 +193,11 @@ public class Player
 							}
 							
 							this.playerDisplayInterface.displayOpponentAsATarget();
-							this.playerDisplayInterface.displayBoard(this.opponent.board,false);
+							this.playerDisplayInterface.displayBoard(this.opponentPlayer.board,false);
 							
 							this.playerDisplayInterface.displayWaitingForAChoice();
 							
-							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoardOrOpponentHimself(this.opponent.board);
+							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoardOrOpponentHimself(this.opponentPlayer.board);
 
 								
 							if (invocationToFocus == null)
@@ -295,7 +211,7 @@ public class Player
 								
 								if (targetLife <= 0)
 								{
-									this.opponent.board.removeInvocation(invocationToFocus);
+									this.opponentPlayer.board.removeInvocationFromBoard(invocationToFocus);
 								}
 									
 								criDeGuerreWasUsed = true;
@@ -315,9 +231,6 @@ public class Player
 				{
 					this.playerDisplayInterface.displayToMuchInvocationOnTheBoard();
 				}
-				
-				
-				
 
 			}
 			else
@@ -325,23 +238,14 @@ public class Player
 				this.playerDisplayInterface.displayNotEnoughManaMessage();
 			}
 			
-
-				
 		}
 		else
 		{
 			this.playerDisplayInterface.displayNotValidCard();
 		}
 		
-		
 	}
 	
-	/**
-	 * Allow the player to play a spell. It contains :
-	 * - a choice of the card with checking if it is exists in the hand and if it is an instance of Spell
-	 * - a choice of the spell to play with checking mana state
-	 * - Apply the effect of the spell
-	 */
 	private void useSpell(Spell p_spell)
 	{
 
@@ -361,7 +265,6 @@ public class Player
 					
 					this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
 					this.changeOpponentLife(p_spell.returnEffect());
-					// TODO finir partie
 				}
 				else if (p_spell.returnSpellTarget().equals("Soi-même (joueur ou invocation)"))
 				{
@@ -388,40 +291,35 @@ public class Player
 							{
 								this.addLifePoints(p_spell.returnEffect());
 								isAttribute = true;
-							}
-							
-							
+							}							
 							
 						} while (!isAttribute);
-						
-						
-						
+					
 					}
 					else
 					{
 						this.playerDisplayInterface.displayNoOtherTargetThanCurrentPlayerForThisSpell();
 						this.addLifePoints(p_spell.returnEffect());
-					}
-					
+					}				
 					
 				}
 				else if (p_spell.returnSpellTarget().equals("Invocation ennemie"))
 				{
 					this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
 					
-					if (this.opponent.board.getInvocationNumber() == 0)
+					if (this.opponentPlayer.board.getInvocationNumber() == 0)
 					{
 						this.playerDisplayInterface.displayNoTargetAvailableForThisSpell();
 					}
 					else
 					{
-						this.playerDisplayInterface.displayBoard(this.opponent.board,false);
+						this.playerDisplayInterface.displayBoard(this.opponentPlayer.board,false);
 						
 						boolean isAttribute = false;
 						do 
 						{
 							this.playerDisplayInterface.displayWaitingForAChoice();
-							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoard(this.opponent.board);
+							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoard(this.opponentPlayer.board);
 							
 							if (invocationToFocus != null)
 							{
@@ -429,7 +327,7 @@ public class Player
 								int targetLife = invocationToFocus.changeLife(p_spell.returnEffect());
 								if (targetLife <= 0)
 								{
-									this.opponent.board.removeInvocation(invocationToFocus);
+									this.opponentPlayer.board.removeInvocationFromBoard(invocationToFocus);
 								}
 								
 								isAttribute = true;
@@ -448,7 +346,7 @@ public class Player
 				{
 					this.playerDisplayInterface.displaySpellMessage(p_spell.returnEffect(), p_spell.returnSpellTarget());
 					
-					if (this.opponent.board.getInvocationNumber() == 0)
+					if (this.opponentPlayer.board.getInvocationNumber() == 0)
 					{
 						this.playerDisplayInterface.displayNoOtherTargetThanOpponentForThisSpell();
 						this.changeOpponentLife(p_spell.returnEffect());
@@ -456,14 +354,14 @@ public class Player
 					else
 					{
 						this.playerDisplayInterface.displayOpponentAsATarget();
-						this.playerDisplayInterface.displayBoard(this.opponent.board,false);
+						this.playerDisplayInterface.displayBoard(this.opponentPlayer.board,false);
 						
 						boolean isAttribute = false;
 						do 
 						{
 							this.playerDisplayInterface.displayWaitingForAChoice();
 							
-							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoardOrOpponentHimself(this.opponent.board);
+							Invocation invocationToFocus = this.playerEntryInterface.choseInvocationInOpponentBoardOrOpponentHimself(this.opponentPlayer.board);
 							
 							if (invocationToFocus == null)
 							{
@@ -476,7 +374,7 @@ public class Player
 								
 								if (targetLife <= 0)
 								{
-									this.opponent.board.removeInvocation(invocationToFocus);
+									this.opponentPlayer.board.removeInvocationFromBoard(invocationToFocus);
 								}
 								
 								isAttribute = true;
@@ -518,56 +416,40 @@ public class Player
 			this.healthPoint += p_pointsToAdd;
 		}
 	}
-	
-	
-	/**
-	 * Define the opponent of the current player
-	 * @param p_opponent : the opponent to associate
-	 */
+
 	public void defineOpponent(Player p_opponent)
 	{
-		this.opponent = p_opponent;
+		this.opponentPlayer = p_opponent;
 	}
-	
-	/**
-	 * Allow the player to attack with an Invocation posed on the board. It checks :
-	 * - if the keyboard entry is a number
-	 * - if the keyboard entry is an existing card in the board of the player or not
-	 * - if the second keyboard entry is a number
-	 * - if the second keyboard entry is an existing card in the board of the player's opponent or not
-	 * - if there is a card on the player's opponent board with the special capacity "avant-garde", and if needed, applies it
-	 * - if the invocation which attack has a special capacity in : "charge", "enchainement"
-	 */
-	public void attack(Invocation p_invocation)
+
+	public void attackWithAnInvocationOnTheBoard(Invocation p_invocation)
 	{
 		if (p_invocation != null)
 		{
-			if (p_invocation.doNotDoHisFirstTurn() || p_invocation.getCapacity().equals("charge"))
+			if (p_invocation.doNotDoItsFirstTurn() || p_invocation.getCapacity().equals("charge"))
 			{
-				if (!(p_invocation.haveAttacked()) || ((p_invocation.returnCapacity().equals("enchainement")) && !(p_invocation.returnHasUsedHisSecondAttack_Enchainement())))
+				if (!(p_invocation.hasAttacked()) || ((p_invocation.returnCapacity().equals("enchainement")) && !(p_invocation.returnHasUsedItsSecondAttack_Enchainement())))
 				{
 					this.playerDisplayInterface.displayOpponentAsATarget();
-					this.playerDisplayInterface.displayBoard(this.opponent.board,false);
+					this.playerDisplayInterface.displayBoard(this.opponentPlayer.board,false);
 					
 					this.playerDisplayInterface.displayWaitingForAChoice();
 					
 					
-					Invocation targetInvocation = this.playerEntryInterface.choseInvocationInOpponentBoardOrOpponentHimself(this.opponent.board);
+					Invocation targetInvocation = this.playerEntryInterface.choseInvocationInOpponentBoardOrOpponentHimself(this.opponentPlayer.board);
 					
 					
 					if (targetInvocation == null)
 					{
-						if (!(this.opponent.board.thereIsAtLeastOneAvantGardeInvocationOnTheBoard()))
+						if (!(this.opponentPlayer.board.thereIsAtLeastOneAvantGardeInvocationOnTheBoard()))
 						{
 							this.changeOpponentLife(p_invocation.getAttackPoints());
 							new Audio(2).start();
 							
-							if (p_invocation.haveAttacked())
+							if (p_invocation.hasAttacked())
 							{
-								p_invocation.changeHasUsedHisSecondAttack_Enchainement(true);
+								p_invocation.changeHasUsedItsSecondAttack_Enchainement(true);
 							}
-							
-
 
 							p_invocation.makeInactive();
 							this.playerDisplayInterface.refreshFullDisplay();
@@ -580,23 +462,23 @@ public class Player
 					}
 					else
 					{
-						if (!(!(targetInvocation.returnCapacity().equals("avant-garde")) && this.opponent.board.thereIsAtLeastOneAvantGardeInvocationOnTheBoard()) )
+						if (!(!(targetInvocation.returnCapacity().equals("avant-garde")) && this.opponentPlayer.board.thereIsAtLeastOneAvantGardeInvocationOnTheBoard()) )
 						{
 							int targetCardLife = targetInvocation.changeLife(p_invocation.getAttackPoints());
 							int playerCardLife = p_invocation.changeLife(targetInvocation.getAttackPoints());
 							new Audio(2).start();
 							if (targetCardLife <= 0)
 							{
-								this.opponent.board.removeInvocation(targetInvocation);
+								this.opponentPlayer.board.removeInvocationFromBoard(targetInvocation);
 							}
 							if (playerCardLife <= 0)
 							{
-								this.board.removeInvocation(p_invocation);
+								this.board.removeInvocationFromBoard(p_invocation);
 							}
 								
-							if (p_invocation.haveAttacked())
+							if (p_invocation.hasAttacked())
 							{
-								p_invocation.changeHasUsedHisSecondAttack_Enchainement(true);
+								p_invocation.changeHasUsedItsSecondAttack_Enchainement(true);
 							}
 								
 								
@@ -625,22 +507,12 @@ public class Player
 		
 	}
 	
-	/**
-	 * Return the current value of mana of the player
-	 * @return this.mana : the current value of mana of the player
-	 */
+	
 	public int getMana()
 	{
 		return this.mana;
 	}
-	
 
-	
-
-	
-	/**
-	 * Apply the function makeOperational for each Invocation on the player's board
-	 */
 	public void updateInvocationStates()
 	{
 		for (int currentInvocation = 0; currentInvocation < this.board.getInvocationNumber(); currentInvocation++)
@@ -654,12 +526,6 @@ public class Player
 	}
 	
 
-	
-
-	
-	/**
-	 * For each card of the player's board, check if the special capacity is "Pacte diabolique" and, if needed, applies it
-	 */
 	public void applyPacteDiabolique()
 	{
 
@@ -676,7 +542,7 @@ public class Player
 					
 					if (vieCarte <= 0)
 					{
-						this.board.removeInvocation(invocationToChange);
+						this.board.removeInvocationFromBoard(invocationToChange);
 					}
 				}
 			}
@@ -709,13 +575,9 @@ public class Player
 	
 	public Player getOpponent()
 	{
-		return this.opponent;
+		return this.opponentPlayer;
 	}
-	
-	/**
-	 * Return the player's number
-	 * @return this.playerNumber : the number of the player
-	 */
+
 	public int getPlayerNumber()
 	{
 		return this.playerNumber;
@@ -723,17 +585,17 @@ public class Player
 	
 	public void changeOpponentLife(int p_pointsToRemove)
 	{
-		if (this.opponent.healthPoint - p_pointsToRemove <= 0)
+		if (this.opponentPlayer.healthPoint - p_pointsToRemove <= 0)
 		{
-			this.opponent.healthPoint = 0;
+			this.opponentPlayer.healthPoint = 0;
 			new Audio(5).run();
-			this.opponent.playerDisplayInterface.displayVictoryMessage();
+			this.opponentPlayer.playerDisplayInterface.displayVictoryMessage();
 			new Audio(5).start();
 			System.exit(0);
 		}
 		else
 		{
-			this.opponent.healthPoint -= p_pointsToRemove;
+			this.opponentPlayer.healthPoint -= p_pointsToRemove;
 		}
 	}
 	
